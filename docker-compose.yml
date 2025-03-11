@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  website-monitor:
+    build: .
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    restart: always
+    environment:
+      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+    
+  # You can comment this if you don't want a web UI to view status
+  adminer:
+     image: adminer
+     restart: always
+     ports:
+       - 8080:8080
