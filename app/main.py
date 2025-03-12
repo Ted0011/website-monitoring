@@ -7,8 +7,7 @@ import requests
 import logging
 import hashlib
 from datetime import datetime
-import pytz  # Import the pytz library
-
+import pytz
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -198,6 +197,8 @@ def main():
             monitor_websites()
         except Exception as e:
             logging.error(f"Error in monitoring cycle: {str(e)}")
+            logging.error('Restarting monitor cycle in 60 seconds.......')
+            time.sleep(60)
         
         # Wait before next check
         time.sleep(300)  # 5 minutes between checks
