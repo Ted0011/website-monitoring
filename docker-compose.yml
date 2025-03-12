@@ -8,11 +8,18 @@ services:
       - ./data:/data
     restart: always
     environment:
-      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+      - SLACK_WEBHOOK_URL={{YOUR_SLACK_WEBHOOK_EASY_TO_CREATE_ONE}}
     
   # You can comment this if you don't want a web UI to view status
   adminer:
-     image: adminer
-     restart: always
-     ports:
-       - 8080:8080
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data:/data
+      - ./plugins-enabled:/var/www/html/plugins-enabled
+    environment:
+      ADMINER_PASSWORD: "admin_password"
+      ADMINER_DEFAULT_SERVER: ./data/websites.db
+      ADMINER_DESIGN: pepa-linha

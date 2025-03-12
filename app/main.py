@@ -5,6 +5,7 @@ import sqlite3
 import json
 import requests
 import logging
+import hashlib
 from datetime import datetime
 
 # Configure logging
@@ -36,6 +37,14 @@ WEBSITES = [
     "https://sendingmiddleware.isendremit.com/swagger/index.html"
 ]
 
+# Default user credentials
+DEFAULT_USERNAME = "admin"
+DEFAULT_PASSWORD = "admin_password"
+
+def hash_password(password):
+    """Hash the password using SHA-256 (you can use bcrypt for more security)"""
+    return hashlib.sha256(password.encode('utf-8')).hexdigest()
+
 def init_database():
     """Initialize the SQLite database"""
     conn = sqlite3.connect(DB_PATH)
@@ -51,6 +60,25 @@ def init_database():
         failure_count INTEGER DEFAULT 0
     )
     ''')
+
+    # Create users table if it doesn't exist
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        password_hash TEXT
+    )
+    ''')
+
+    # Insert default user if it doesn't exist
+    cursor.execute("SELECT * FROM users WHERE username = ?", (DEFAULT_USERNAME,))
+    result = cursor.fetchone()
+    if not result:
+        hashed_password = hash_password(DEFAULT_PASSWORD)
+        cursor.execute(
+            "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+            (DEFAULT_USERNAME, hashed_password)
+        )
+        logging.info(f"Default user {DEFAULT_USERNAME} created.")
     
     # Insert websites if they don't exist
     for website in WEBSITES:
