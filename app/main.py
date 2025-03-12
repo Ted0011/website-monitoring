@@ -7,6 +7,7 @@ import requests
 import logging
 import hashlib
 from datetime import datetime
+import pytz  # Import the pytz library
 
 # Configure logging
 logging.basicConfig(
@@ -84,7 +85,7 @@ def init_database():
     for website in WEBSITES:
         cursor.execute(
             "INSERT OR IGNORE INTO websites (url, status, failure_count, last_checked) VALUES (?, ?, ?, ?)",
-            (website, "healthy", 0, datetime.now().isoformat())
+            (website, "healthy", 0, datetime.now(pytz.timezone('Asia/Kathmandu')).isoformat())
         )
     
     conn.commit()
@@ -144,7 +145,7 @@ def update_website_status(url, status_code, failure_count):
     result = cursor.fetchone()
     previous_status = result[0] if result else "unknown"
     
-    timestamp = datetime.now().isoformat()
+    timestamp = datetime.now(pytz.timezone('Asia/Kathmandu')).isoformat()  # Use Asia/Kathmandu timezone
     new_status = "failed" if failure_count >= 2 else "healthy"
     
     # Always update the database
