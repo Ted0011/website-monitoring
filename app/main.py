@@ -18,8 +18,10 @@ logging.basicConfig(
     ]
 )
 
-# Configuration
+# Configuration from docker-compose.yml file
 SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
+#### UN-COMMENT IF SECOND_ANY_WEBHOOK_URL IS REQUIRED
+#SECOND_ANY_WEBHOOK_URL = os.environ.get('SECOND_ANY_WEBHOOK_URL')
 DB_PATH = "/data/websites.db"
 MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
@@ -106,6 +108,23 @@ def send_slack_notification(message):
             logging.error(f"Failed to send Slack notification: {response.text}")
     except Exception as e:
         logging.error(f"Error sending Slack notification: {str(e)}")
+        
+##UN-COMMENT IF REQUIRED
+'''def second_any_webhook_message_posting_notification(message):
+    """ SEND SECOND NOTIFICATION TO ANY CHANNEL"""
+    if not SECOND_ANY_WEBHOOK_URL:
+        logging.warning("ANY other webhook cannot be called, skipping notification")
+        return
+    try:
+        response = requests.post(
+            SECOND_ANY_WEBHOOK_URL,
+            json={"text": message}
+        )
+        if response.status_code != 200:
+            logging.error(f"Failed to send Second webhook notification: {response.text}")
+    except Exception as e:
+        logging.error(f"Error sending second webhook message: {str(e)}")
+'''
 
 def check_website(url):
     """Check a website's status with retries"""
@@ -163,6 +182,8 @@ def update_website_status(url, status_code, failure_count):
         if previous_status != "failed":
             alert_message = f":warning: [{timestamp}] {log_message}"
             send_slack_notification(alert_message)
+            ##UN-COMMENT IF REQUIRED
+            ##second_any_webhook_message_posting_notification(alert_message)
             logging.warning(f"ALERT ALERT - {log_message}")
     else:
         log_message = f"Website {url} is healthy. Status code: {status_code}."
@@ -172,6 +193,8 @@ def update_website_status(url, status_code, failure_count):
         if previous_status == "failed":
             recovery_message = f":white_check_mark: [{timestamp}] Website {url} is now healthy. Status code: {status_code}."
             send_slack_notification(recovery_message)
+            ##UN-COMMENT IF REQUIRED
+            ##second_any_webhook_message_posting_notification(recovery_message)
             logging.info(f"RECOVERY - {log_message}")
     
     conn.close()

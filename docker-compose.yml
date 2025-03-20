@@ -9,6 +9,10 @@ services:
     restart: always
     environment:
       - SLACK_WEBHOOK_URL={{YOUR_SLACK_WEBHOOK_EASY_TO_CREATE_ONE}}
+      #### UN-COMMENT THE SECOND_ANY_WEBHOOK_URL LINE IF YOU WANT TO POST MESSAGE IN DIFFERENT CHANNEL 
+      #### OR 
+      #### ANYWHERE ELSE THROUGH A WEBHOOK MS-TEAM, GOOGLE CHAT, SLACK, OR ANYWHERE.......
+      #- SECOND_ANY_WEBHOOK_URL={{YOUR_SECOND_WEBHOOK_EASY_TO_CREATE_ONE}}
     
   # You can comment this if you don't want a web UI to view status
   adminer:
